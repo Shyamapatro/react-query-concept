@@ -1,33 +1,42 @@
 import React from "react";
-import axios from "axios";
-import { useQuery } from "@tanstack/react-query";
+import { useApi } from "./Hook/useApi";
 const Home = () => {
-  const { data, isLoading, isError, refetch } = useQuery(["anything"], () => {
-    return axios.get("https://catfact.ninja/fact").then((res) => res.data);
-  });
+  const [dataFact, factLoading, factError, refetchFact] = useApi(
+    "https://catfact.ninja/fact",
+    "fact"
+  );
+  const [dataImg, ImgLoading, ImgError, refetchImg] = useApi(
+    "https://dog.ceo/api/breeds/image/random",
+    "img"
+  );
 
-  if (isLoading) {
-    return (
-      <div>
-        <h4>Loading...</h4>
-      </div>
-    );
+  if (factLoading || ImgLoading) {
+    return <h1>Data is Loading </h1>;
+  }
+  if (factError || ImgError) {
+    return <h1>somthing is wrong with api </h1>;
   }
 
-  if (isError) {
-    return (
-      <div>
-        <h4>Something is wrong...</h4>
-      </div>
-    );
-  }
   return (
-    <div>
-      {/* ? is check data is there or not if there is data the fact data is printed on the  */}
-      <h1>{data?.fact}</h1>
-      <button onClick={refetch}>Fatch API</button>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+      }}
+    >
+      <div>
+        <img src={dataImg?.message} alt="" width={200} height={200} />
+        <button onClick={refetchImg}> Fetch Image </button>
+      </div>
+      <div>
+        <h1>{dataFact?.fact}</h1>
+        <button onClick={refetchFact}> Fetch Data </button>
+      </div>
     </div>
   );
 };
 
 export default Home;
+
+//
